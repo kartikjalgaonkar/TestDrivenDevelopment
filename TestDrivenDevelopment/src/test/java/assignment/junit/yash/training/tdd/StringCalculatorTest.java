@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.logging.Logger;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,6 +23,9 @@ public class StringCalculatorTest {
 	@InjectMocks
 	StringCalculator stringCalculator = new StringCalculator();
 	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
 	@Test
 	public void shouldReturnZeroWhenInputIsEmptyString() {
 		Integer actualResult = stringCalculator.addNumbers("");
@@ -36,8 +41,8 @@ public class StringCalculatorTest {
 	
 	@Test
 	public void shouldReturnSumOfTwoNumbers(){
-		Integer actualResult = stringCalculator.addNumbers("-1,3");
-		assertEquals(2, actualResult.intValue());
+		Integer actualResult = stringCalculator.addNumbers("1,3");
+		assertEquals(4, actualResult.intValue());
 	}
 	@Test
 	public void shouldReturnSumOfMoreThanOneNumbersEparatedWithComma(){
@@ -69,6 +74,15 @@ public class StringCalculatorTest {
 		stringCalculator.addNumbers("//;\n1;3;45;645;3;1001");
 		Mockito.verify(logger).info("697");
 	}
+	
+	@Test
+	public void shouldThrowExceptionIfNegativeInputIsGiven(){
+		
+		expectedException.expect(RuntimeException.class);
+		expectedException.expectMessage("Negative numbers not allowed:[-45, -3]");
+		stringCalculator.addNumbers("//;\n1;3;-45;645;-3;1001");
+	}
+	
 	/*@Test(expected=NumberFormatException.class)
 	public void shouldThrowExceptionIfInvalidInputIsGiven(){
 		stringCalculator.addNumbers("2,asdf,13");
